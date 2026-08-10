@@ -2,6 +2,7 @@
 .gradle/
 .kotlin/
 .idea/
+gradle/gradle-daemon-jvm.properties
 local.properties
 build/
 captures/

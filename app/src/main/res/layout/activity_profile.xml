@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@color/surface">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="24dp">
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Student profile" android:textColor="@color/navy" android:textSize="30sp" android:textStyle="bold" />
+        <EditText android:id="@+id/profileName" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="24dp" android:hint="Full name" android:inputType="textPersonName" />
+        <EditText android:id="@+id/profileDepartment" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:hint="Department" />
+        <EditText android:id="@+id/profileCourses" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:hint="Courses (for example: Calculus, Kotlin)" />
+        <EditText android:id="@+id/profileAvailability" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:hint="Availability" />
+        <EditText android:id="@+id/profileBio" android:layout_width="match_parent" android:layout_height="110dp" android:layout_marginTop="10dp" android:gravity="top" android:hint="A short introduction" android:inputType="textMultiLine" />
+        <Button android:id="@+id/saveProfileButton" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="20dp" android:text="Save profile" />
+        <Button android:id="@+id/continueHomeButton" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:text="Continue to StudyMate" />
+    </LinearLayout>
+</ScrollView>
