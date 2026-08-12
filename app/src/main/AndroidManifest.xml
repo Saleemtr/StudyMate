@@ -5,6 +5,9 @@
         android:label="StudyMate"
         android:supportsRtl="true"
         android:theme="@style/Theme.StudyMate">
+        <activity android:name=".StudyRequestDetailsActivity" />
+        <activity android:name=".MyRequestsActivity" />
+        <activity android:name=".CreateRequestActivity" />
         <activity android:name=".ProfileActivity" />
         <activity android:name=".RegisterActivity" />
         <activity android:name=".MainActivity" />

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@color/surface">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="24dp">
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Create study request" android:textColor="@color/navy" android:textSize="30sp" android:textStyle="bold" />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="Share what, when and where you want to study" android:textColor="@color/blue" android:textSize="16sp" />
+        <EditText android:id="@+id/requestCourse" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="24dp" android:hint="Course name" />
+        <EditText android:id="@+id/requestTopic" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:hint="Topic or assignment" />
+        <EditText android:id="@+id/requestDate" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:hint="Date (DD/MM/YYYY)" android:inputType="date" />
+        <EditText android:id="@+id/requestTime" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:hint="Time (HH:MM)" android:inputType="time" />
+        <Spinner android:id="@+id/requestLocation" android:layout_width="match_parent" android:layout_height="56dp" android:layout_marginTop="10dp" android:entries="@array/study_locations" />
+        <EditText android:id="@+id/requestNotes" android:layout_width="match_parent" android:layout_height="110dp" android:layout_marginTop="10dp" android:gravity="top" android:hint="Additional notes (optional)" android:inputType="textMultiLine" />
+        <Button android:id="@+id/publishRequestButton" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="22dp" android:text="Publish request" />
+    </LinearLayout>
+</ScrollView>
