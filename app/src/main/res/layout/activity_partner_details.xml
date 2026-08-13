@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@color/surface">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="24dp">
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Study partner" android:textColor="@color/navy" android:textSize="30sp" android:textStyle="bold" />
+        <TextView android:id="@+id/partnerDetailsScore" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="22dp" android:textColor="@color/blue" android:textSize="17sp" android:textStyle="bold" />
+        <TextView android:id="@+id/partnerDetailsName" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:textColor="@color/navy" android:textSize="28sp" android:textStyle="bold" />
+        <TextView android:id="@+id/partnerDetailsDepartment" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:textColor="@color/blue" android:textSize="16sp" />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="28dp" android:text="Course" android:textColor="@color/navy" android:textStyle="bold" />
+        <TextView android:id="@+id/partnerDetailsCourse" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:textColor="@color/navy" android:textSize="19sp" />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="18dp" android:text="Study topic" android:textColor="@color/navy" android:textStyle="bold" />
+        <TextView android:id="@+id/partnerDetailsTopic" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:textColor="@color/navy" android:textSize="19sp" />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="18dp" android:text="Availability" android:textColor="@color/navy" android:textStyle="bold" />
+        <TextView android:id="@+id/partnerDetailsAvailability" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:textColor="@color/navy" android:textSize="17sp" />
+        <TextView android:id="@+id/partnerDetailsMode" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="7dp" android:textColor="@color/blue" android:textSize="16sp" />
+        <TextView android:id="@+id/partnerDetailsBio" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="24dp" android:background="@color/white" android:padding="16dp" android:textColor="@color/navy" android:textSize="16sp" />
+    </LinearLayout>
+</ScrollView>

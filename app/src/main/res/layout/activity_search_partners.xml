@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@color/surface">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="24dp">
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Find study partners" android:textColor="@color/navy" android:textSize="30sp" android:textStyle="bold" />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="Search by course, topic, student or department" android:textColor="@color/blue" android:textSize="16sp" />
+        <EditText android:id="@+id/searchKeyword" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="22dp" android:hint="Try Kotlin, Calculus or Maya" android:inputType="text" android:singleLine="true" />
+        <Spinner android:id="@+id/availabilityFilter" android:layout_width="match_parent" android:layout_height="56dp" android:layout_marginTop="8dp" android:entries="@array/availability_filters" />
+        <Spinner android:id="@+id/modeFilter" android:layout_width="match_parent" android:layout_height="56dp" android:layout_marginTop="4dp" android:entries="@array/meeting_mode_filters" />
+        <Button android:id="@+id/searchPartnersAction" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:text="Search" />
+        <TextView android:id="@+id/resultCount" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="24dp" android:textColor="@color/navy" android:textSize="18sp" android:textStyle="bold" />
+        <TextView android:id="@+id/emptyPartnersText" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="36dp" android:gravity="center" android:text="No partners match these filters. Try a broader search." android:textColor="@color/navy" android:textSize="16sp" android:visibility="gone" />
+        <LinearLayout android:id="@+id/partnerResultsContainer" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:orientation="vertical" />
+    </LinearLayout>
+</ScrollView>

@@ -6,4 +6,10 @@
     <string-array name="study_locations">
         <item>Campus library</item><item>Online</item><item>Study room</item><item>Campus café</item><item>Other</item>
     </string-array>
+    <string-array name="availability_filters">
+        <item>Any availability</item><item>Mornings</item><item>Afternoons</item><item>Evenings</item><item>Weekends</item>
+    </string-array>
+    <string-array name="meeting_mode_filters">
+        <item>Any meeting mode</item><item>In person</item><item>Online</item><item>Hybrid</item>
+    </string-array>
 </resources>
