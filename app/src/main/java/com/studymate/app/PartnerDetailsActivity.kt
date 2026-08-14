@@ -1,7 +1,9 @@
 package com.studymate.app
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
+import android.widget.Button
 import android.widget.TextView
 
 class PartnerDetailsActivity : Activity() {
@@ -17,5 +19,9 @@ class PartnerDetailsActivity : Activity() {
         findViewById<TextView>(R.id.partnerDetailsAvailability).text = partner.availability
         findViewById<TextView>(R.id.partnerDetailsMode).text = "${partner.meetingMode} • ${partner.location}"
         findViewById<TextView>(R.id.partnerDetailsBio).text = partner.bio
+        findViewById<Button>(R.id.contactPartnerButton).setOnClickListener {
+            ChatStore.ensureConversation(this, partner.id)
+            startActivity(Intent(this, ChatActivity::class.java).putExtra("partner_id", partner.id))
+        }
     }
 }

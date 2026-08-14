@@ -17,6 +17,9 @@ class MainActivity : Activity() {
         findViewById<android.widget.Button>(R.id.searchPartnersButton).setOnClickListener {
             startActivity(Intent(this, SearchPartnersActivity::class.java))
         }
+        findViewById<android.widget.Button>(R.id.messagesButton).setOnClickListener {
+            startActivity(Intent(this, ConversationsActivity::class.java))
+        }
         findViewById<android.widget.Button>(R.id.profileButton).setOnClickListener {
             startActivity(Intent(this, ProfileActivity::class.java))
         }

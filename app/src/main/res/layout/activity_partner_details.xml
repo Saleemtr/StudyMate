@@ -13,5 +13,6 @@
         <TextView android:id="@+id/partnerDetailsAvailability" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:textColor="@color/navy" android:textSize="17sp" />
         <TextView android:id="@+id/partnerDetailsMode" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="7dp" android:textColor="@color/blue" android:textSize="16sp" />
         <TextView android:id="@+id/partnerDetailsBio" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="24dp" android:background="@color/white" android:padding="16dp" android:textColor="@color/navy" android:textSize="16sp" />
+        <Button android:id="@+id/contactPartnerButton" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="24dp" android:text="Contact student" />
     </LinearLayout>
 </ScrollView>
