@@ -27,9 +27,13 @@ object StudyRequestStore {
         val requests = getAll(context).filterNot { it.id == request.id }.toMutableList()
         requests.add(request)
         persist(context, requests)
+        FirebaseBackend.syncRequest(context, request)
     }
 
-    fun delete(context: Context, id: Long) = persist(context, getAll(context).filterNot { it.id == id })
+    fun delete(context: Context, id: Long) {
+        persist(context, getAll(context).filterNot { it.id == id })
+        FirebaseBackend.deleteRequest(context, id)
+    }
 
     private fun persist(context: Context, requests: List<StudyRequest>) {
         val array = JSONArray()

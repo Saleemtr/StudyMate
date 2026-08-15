@@ -7,6 +7,7 @@ import android.util.Patterns
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Spinner
+import android.widget.Toast
 
 class RegisterActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,14 +25,25 @@ class RegisterActivity : Activity() {
             email.error = if (validEmail) null else "Enter a valid email"
             password.error = if (validPassword) null else "Use at least 6 characters"
             if (validName && validEmail && validPassword) {
+                val profile = mapOf<String, Any>(
+                    "name" to name.text.toString().trim(), "email" to email.text.toString().trim(),
+                    "department" to department.selectedItem.toString()
+                )
                 getSharedPreferences("profile", MODE_PRIVATE).edit()
                     .putString("name", name.text.toString().trim())
                     .putString("email", email.text.toString().trim())
                     .putString("department", department.selectedItem.toString())
                     .apply()
-                startActivity(Intent(this, ProfileActivity::class.java))
-                finish()
+                val handledByFirebase = FirebaseBackend.register(this, email.text.toString().trim(), password.text.toString(), profile) { success, error ->
+                    if (success) openProfile() else Toast.makeText(this, error ?: "Registration failed", Toast.LENGTH_LONG).show()
+                }
+                if (!handledByFirebase) openProfile()
             }
         }
+    }
+
+    private fun openProfile() {
+        startActivity(Intent(this, ProfileActivity::class.java))
+        finish()
     }
 }

@@ -2,11 +2,21 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <application
+        android:name=".StudyMateApplication"
         android:allowBackup="true"
         android:label="StudyMate"
         android:supportsRtl="true"
         android:theme="@style/Theme.StudyMate">
+        <meta-data android:name="firebase_messaging_installation_id_enabled" android:value="true" />
+        <service
+            android:name=".StudyMateMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
         <activity android:name=".ChatActivity" />
         <activity android:name=".ConversationsActivity" />
         <activity android:name=".PartnerDetailsActivity" />

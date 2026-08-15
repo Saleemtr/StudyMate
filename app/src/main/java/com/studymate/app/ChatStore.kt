@@ -25,8 +25,10 @@ object ChatStore {
         }
     }
 
-    fun add(context: Context, partnerId: Long, message: ChatMessage) =
+    fun add(context: Context, partnerId: Long, message: ChatMessage) {
         save(context, partnerId, messages(context, partnerId) + message)
+        FirebaseBackend.syncMessage(context, partnerId, message)
+    }
 
     private fun save(context: Context, partnerId: Long, messages: List<ChatMessage>) {
         val array = JSONArray()

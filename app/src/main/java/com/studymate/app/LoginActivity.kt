@@ -7,6 +7,7 @@ import android.util.Patterns
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 
 class LoginActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,12 +21,19 @@ class LoginActivity : Activity() {
             email.error = if (validEmail) null else "Enter a valid email"
             password.error = if (validPassword) null else "Use at least 6 characters"
             if (validEmail && validPassword) {
-                startActivity(Intent(this, MainActivity::class.java))
-                finish()
+                val handledByFirebase = FirebaseBackend.signIn(this, email.text.toString().trim(), password.text.toString()) { success, error ->
+                    if (success) openHome() else Toast.makeText(this, error ?: "Sign in failed", Toast.LENGTH_LONG).show()
+                }
+                if (!handledByFirebase) openHome()
             }
         }
         findViewById<TextView>(R.id.openRegister).setOnClickListener {
             startActivity(Intent(this, RegisterActivity::class.java))
         }
+    }
+
+    private fun openHome() {
+        startActivity(Intent(this, MainActivity::class.java))
+        finish()
     }
 }

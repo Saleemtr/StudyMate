@@ -13,3 +13,14 @@ Android application for finding study partners, based on the supplied product pr
 7. Validation, accessibility, tests and release polish.
 
 Each day is kept as a focused Git commit so it can be pushed to GitHub independently.
+
+## Firebase setup
+
+Firebase Authentication, Cloud Firestore, Storage and Cloud Messaging SDKs are integrated. The app keeps a local fallback until a Firebase project is connected.
+
+1. Create an Android app in Firebase Console with package name `com.studymate.app`.
+2. Download `google-services.json` and place it in the `app/` directory.
+3. Enable Email/Password Authentication, create a Firestore database and a Storage bucket.
+4. Rebuild the project. The Google Services plugin is applied automatically when the configuration file exists.
+
+The configuration file is intentionally ignored by Git.

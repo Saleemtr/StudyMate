@@ -34,6 +34,11 @@ class ProfileActivity : Activity() {
                 .putString("availability", availability.text.toString().trim())
                 .putString("bio", bio.text.toString().trim())
                 .apply()
+            FirebaseBackend.syncProfile(this, mapOf(
+                "name" to name.text.toString().trim(), "department" to department.text.toString().trim(),
+                "courses" to courses.text.toString().trim(), "availability" to availability.text.toString().trim(),
+                "bio" to bio.text.toString().trim()
+            ))
             Toast.makeText(this, "Profile saved", Toast.LENGTH_SHORT).show()
         }
         findViewById<Button>(R.id.continueHomeButton).setOnClickListener {
