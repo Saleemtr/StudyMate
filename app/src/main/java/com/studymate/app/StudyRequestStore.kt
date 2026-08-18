@@ -35,6 +35,10 @@ object StudyRequestStore {
         FirebaseBackend.deleteRequest(context, id)
     }
 
+    fun replaceFromCloud(context: Context, requests: List<StudyRequest>) {
+        persist(context, requests)
+    }
+
     private fun persist(context: Context, requests: List<StudyRequest>) {
         val array = JSONArray()
         requests.forEach { request ->

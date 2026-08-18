@@ -97,6 +97,35 @@ object FirebaseBackend {
         if (isConfigured(context)) FirebaseFirestore.getInstance().collection("studyRequests").document(id.toString()).delete()
     }
 
+    fun observeMyRequests(
+        context: Context,
+        result: (List<StudyRequest>, String?) -> Unit
+    ): ListenerRegistration? {
+        if (!isConfigured(context)) return null
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return null
+        return FirebaseFirestore.getInstance().collection("studyRequests")
+            .whereEqualTo("ownerId", uid)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    result(emptyList(), error.localizedMessage)
+                } else if (snapshot != null) {
+                    result(snapshot.documents.mapNotNull { document ->
+                        val id = document.id.toLongOrNull() ?: return@mapNotNull null
+                        StudyRequest(
+                            id = id,
+                            course = document.getString("course").orEmpty(),
+                            topic = document.getString("topic").orEmpty(),
+                            date = document.getString("date").orEmpty(),
+                            time = document.getString("time").orEmpty(),
+                            location = document.getString("location").orEmpty(),
+                            notes = document.getString("notes").orEmpty(),
+                            status = document.getString("status").orEmpty().ifBlank { "Open" }
+                        )
+                    }.sortedByDescending { it.id }, null)
+                }
+            }
+    }
+
     fun syncMessage(context: Context, partnerId: String, message: ChatMessage) {
         if (!isConfigured(context)) return
         val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
