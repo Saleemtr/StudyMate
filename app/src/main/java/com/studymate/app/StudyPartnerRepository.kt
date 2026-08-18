@@ -18,7 +18,7 @@ object StudyPartnerRepository {
         val localProfile = context.getSharedPreferences("profile", Context.MODE_PRIVATE)
         val ownDepartment = localProfile.getString("department", "").orEmpty()
         val ownCourses = localProfile.getString("courses", "").orEmpty()
-        FirebaseFirestore.getInstance().collection("users").get()
+        FirebaseFirestore.getInstance().collection("publicProfiles").get()
             .addOnSuccessListener { snapshot ->
                 partners = snapshot.documents.filter { it.id != currentUid }.map { document ->
                     val department = document.getString("department").orEmpty()

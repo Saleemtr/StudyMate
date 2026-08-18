@@ -14,6 +14,7 @@ object FirebaseBackend {
     fun initialize(context: Context): Boolean {
         val app = FirebaseApp.initializeApp(context) ?: return false
         FirebaseMessaging.getInstance().register()
+        migrateOwnProfile(context)
         return true
     }
 
@@ -23,7 +24,10 @@ object FirebaseBackend {
         if (!isConfigured(context)) return false
         FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
-                if (task.isSuccessful) syncInstallationId(context)
+                if (task.isSuccessful) {
+                    syncInstallationId(context)
+                    migrateOwnProfile(context)
+                }
                 result(task.isSuccessful, task.exception?.localizedMessage)
             }
         return true
@@ -35,11 +39,16 @@ object FirebaseBackend {
             if (!task.isSuccessful) result(false, task.exception?.localizedMessage)
             else {
                 val uid = task.result.user?.uid ?: return@addOnCompleteListener result(false, "Missing user ID")
-                FirebaseFirestore.getInstance().collection("users").document(uid).set(profile)
-                    .addOnCompleteListener { save ->
+                val database = FirebaseFirestore.getInstance()
+                val privateProfile = mapOf("email" to email)
+                val publicProfile = profile.filterKeys { it != "email" }
+                database.runBatch { batch ->
+                    batch.set(database.collection("users").document(uid), privateProfile, SetOptions.merge())
+                    batch.set(database.collection("publicProfiles").document(uid), publicProfile, SetOptions.merge())
+                }.addOnCompleteListener { save ->
                         if (save.isSuccessful) syncInstallationId(context)
                         result(save.isSuccessful, save.exception?.localizedMessage)
-                    }
+                }
             }
         }
         return true
@@ -48,7 +57,20 @@ object FirebaseBackend {
     fun syncProfile(context: Context, profile: Map<String, Any>) {
         if (!isConfigured(context)) return
         FirebaseAuth.getInstance().currentUser?.uid?.let { uid ->
-            FirebaseFirestore.getInstance().collection("users").document(uid).set(profile, SetOptions.merge())
+            FirebaseFirestore.getInstance().collection("publicProfiles").document(uid).set(profile, SetOptions.merge())
+        }
+    }
+
+    private fun migrateOwnProfile(context: Context) {
+        if (!isConfigured(context)) return
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val database = FirebaseFirestore.getInstance()
+        database.collection("users").document(uid).get().addOnSuccessListener { document ->
+            val publicFields = listOf("name", "department", "courses", "availability", "bio", "meetingMode", "location")
+                .mapNotNull { key -> document.get(key)?.let { key to it } }.toMap()
+            if (publicFields.isNotEmpty()) {
+                database.collection("publicProfiles").document(uid).set(publicFields, SetOptions.merge())
+            }
         }
     }
 
@@ -107,6 +129,26 @@ object FirebaseBackend {
                         timestamp = document.getLong("timestamp") ?: 0L
                     )
                 })
+            }
+    }
+
+    fun observeConversations(context: Context, result: (List<ConversationSummary>) -> Unit): ListenerRegistration? {
+        if (!isConfigured(context)) return null
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return null
+        return FirebaseFirestore.getInstance().collection("chats")
+            .whereArrayContains("participantIds", uid).addSnapshotListener { snapshot, _ ->
+                if (snapshot != null) {
+                    result(snapshot.documents.mapNotNull { document ->
+                        val participants = document.get("participantIds") as? List<*> ?: return@mapNotNull null
+                        val partnerId = participants.filterIsInstance<String>().firstOrNull { it != uid }
+                            ?: return@mapNotNull null
+                        ConversationSummary(
+                            partnerId = partnerId,
+                            lastMessage = document.getString("lastMessage").orEmpty(),
+                            lastMessageAt = document.getLong("lastMessageAt") ?: 0L
+                        )
+                    }.sortedByDescending { it.lastMessageAt })
+                }
             }
     }
 
