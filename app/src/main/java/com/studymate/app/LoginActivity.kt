@@ -12,6 +12,10 @@ import android.widget.Toast
 class LoginActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (FirebaseBackend.hasSignedInUser(this)) {
+            openHome()
+            return
+        }
         setContentView(R.layout.activity_login)
         val email = findViewById<EditText>(R.id.loginEmail)
         val password = findViewById<EditText>(R.id.loginPassword)

@@ -20,6 +20,13 @@ object FirebaseBackend {
 
     fun isConfigured(context: Context) = FirebaseApp.getApps(context).isNotEmpty()
 
+    fun hasSignedInUser(context: Context) =
+        isConfigured(context) && FirebaseAuth.getInstance().currentUser != null
+
+    fun signOut(context: Context) {
+        if (isConfigured(context)) FirebaseAuth.getInstance().signOut()
+    }
+
     fun signIn(context: Context, email: String, password: String, result: (Boolean, String?) -> Unit): Boolean {
         if (!isConfigured(context)) return false
         FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)
