@@ -19,16 +19,27 @@ class LoginActivity : Activity() {
         setContentView(R.layout.activity_login)
         val email = findViewById<EditText>(R.id.loginEmail)
         val password = findViewById<EditText>(R.id.loginPassword)
-        findViewById<Button>(R.id.loginButton).setOnClickListener {
+        val loginButton = findViewById<Button>(R.id.loginButton)
+        loginButton.setOnClickListener {
             val validEmail = Patterns.EMAIL_ADDRESS.matcher(email.text.toString().trim()).matches()
             val validPassword = password.text.length >= 6
             email.error = if (validEmail) null else "Enter a valid email"
             password.error = if (validPassword) null else "Use at least 6 characters"
             if (validEmail && validPassword) {
+                loginButton.isEnabled = false
+                loginButton.text = "Signing in…"
                 val handledByFirebase = FirebaseBackend.signIn(this, email.text.toString().trim(), password.text.toString()) { success, error ->
-                    if (success) openHome() else Toast.makeText(this, error ?: "Sign in failed", Toast.LENGTH_LONG).show()
+                    if (success) openHome() else {
+                        loginButton.isEnabled = true
+                        loginButton.text = "Sign in"
+                        Toast.makeText(this, error ?: "Sign in failed", Toast.LENGTH_LONG).show()
+                    }
                 }
-                if (!handledByFirebase) openHome()
+                if (!handledByFirebase) {
+                    loginButton.isEnabled = true
+                    loginButton.text = "Sign in"
+                    Toast.makeText(this, "Firebase is not configured", Toast.LENGTH_LONG).show()
+                }
             }
         }
         findViewById<TextView>(R.id.openRegister).setOnClickListener {

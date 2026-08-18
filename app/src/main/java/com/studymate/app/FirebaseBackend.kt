@@ -65,11 +65,12 @@ object FirebaseBackend {
         return true
     }
 
-    fun syncProfile(context: Context, profile: Map<String, Any>) {
-        if (!isConfigured(context)) return
-        FirebaseAuth.getInstance().currentUser?.uid?.let { uid ->
-            FirebaseFirestore.getInstance().collection("publicProfiles").document(uid).set(profile, SetOptions.merge())
-        }
+    fun syncProfile(context: Context, profile: Map<String, Any>, result: (Boolean, String?) -> Unit) {
+        if (!isConfigured(context)) return result(false, "Firebase is not configured")
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return result(false, "Sign in first")
+        FirebaseFirestore.getInstance().collection("publicProfiles").document(uid)
+            .set(profile, SetOptions.merge())
+            .addOnCompleteListener { task -> result(task.isSuccessful, task.exception?.localizedMessage) }
     }
 
     fun refreshOwnProfile(context: Context, result: (Boolean, String?) -> Unit) {

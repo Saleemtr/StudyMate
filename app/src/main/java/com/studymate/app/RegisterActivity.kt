@@ -17,7 +17,8 @@ class RegisterActivity : Activity() {
         val email = findViewById<EditText>(R.id.registerEmail)
         val password = findViewById<EditText>(R.id.registerPassword)
         val department = findViewById<Spinner>(R.id.registerDepartment)
-        findViewById<Button>(R.id.registerButton).setOnClickListener {
+        val registerButton = findViewById<Button>(R.id.registerButton)
+        registerButton.setOnClickListener {
             val validName = name.text.toString().trim().length >= 2
             val validEmail = Patterns.EMAIL_ADDRESS.matcher(email.text.toString().trim()).matches()
             val validPassword = password.text.length >= 6
@@ -25,6 +26,8 @@ class RegisterActivity : Activity() {
             email.error = if (validEmail) null else "Enter a valid email"
             password.error = if (validPassword) null else "Use at least 6 characters"
             if (validName && validEmail && validPassword) {
+                registerButton.isEnabled = false
+                registerButton.text = "Creating account…"
                 val profile = mapOf<String, Any>(
                     "name" to name.text.toString().trim(), "email" to email.text.toString().trim(),
                     "department" to department.selectedItem.toString()
@@ -35,9 +38,17 @@ class RegisterActivity : Activity() {
                     .putString("department", department.selectedItem.toString())
                     .apply()
                 val handledByFirebase = FirebaseBackend.register(this, email.text.toString().trim(), password.text.toString(), profile) { success, error ->
-                    if (success) openProfile() else Toast.makeText(this, error ?: "Registration failed", Toast.LENGTH_LONG).show()
+                    if (success) openProfile() else {
+                        registerButton.isEnabled = true
+                        registerButton.text = "Create account"
+                        Toast.makeText(this, error ?: "Registration failed", Toast.LENGTH_LONG).show()
+                    }
                 }
-                if (!handledByFirebase) openProfile()
+                if (!handledByFirebase) {
+                    registerButton.isEnabled = true
+                    registerButton.text = "Create account"
+                    Toast.makeText(this, "Firebase is not configured", Toast.LENGTH_LONG).show()
+                }
             }
         }
     }
