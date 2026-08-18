@@ -7,17 +7,18 @@ import org.json.JSONObject
 object ChatStore {
     private const val PREFS = "chat_messages"
 
-    fun ensureConversation(context: Context, partnerId: Long) {
-        if (!context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).contains(partnerId.toString())) {
+    fun ensureConversation(context: Context, partnerId: String) {
+        if (!context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).contains(partnerId)) {
             save(context, partnerId, listOf(ChatMessage("Hi! I’m interested in studying together.", true, System.currentTimeMillis())))
         }
+        FirebaseBackend.ensureConversation(context, partnerId)
     }
 
-    fun activePartnerIds(context: Context): Set<Long> =
-        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).all.keys.mapNotNull { it.toLongOrNull() }.toSet()
+    fun activePartnerIds(context: Context): Set<String> =
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).all.keys
 
-    fun messages(context: Context, partnerId: Long): List<ChatMessage> {
-        val raw = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(partnerId.toString(), "[]") ?: "[]"
+    fun messages(context: Context, partnerId: String): List<ChatMessage> {
+        val raw = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(partnerId, "[]") ?: "[]"
         val array = JSONArray(raw)
         return (0 until array.length()).map { index ->
             val item = array.getJSONObject(index)
@@ -25,12 +26,12 @@ object ChatStore {
         }
     }
 
-    fun add(context: Context, partnerId: Long, message: ChatMessage) {
+    fun add(context: Context, partnerId: String, message: ChatMessage) {
         save(context, partnerId, messages(context, partnerId) + message)
         FirebaseBackend.syncMessage(context, partnerId, message)
     }
 
-    private fun save(context: Context, partnerId: Long, messages: List<ChatMessage>) {
+    private fun save(context: Context, partnerId: String, messages: List<ChatMessage>) {
         val array = JSONArray()
         messages.forEach { message ->
             array.put(JSONObject().apply {
@@ -38,6 +39,6 @@ object ChatStore {
             })
         }
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
-            .putString(partnerId.toString(), array.toString()).apply()
+            .putString(partnerId, array.toString()).apply()
     }
 }

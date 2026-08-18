@@ -10,15 +10,17 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import com.google.firebase.firestore.ListenerRegistration
 
 class ChatActivity : Activity() {
-    private var partnerId: Long = 0
+    private var partnerId: String = ""
     private lateinit var messagesContainer: LinearLayout
+    private var messageListener: ListenerRegistration? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
-        partnerId = intent.getLongExtra("partner_id", 0)
+        partnerId = intent.getStringExtra("partner_id").orEmpty()
         val partner = StudyPartnerRepository.find(partnerId) ?: run { finish(); return }
         ChatStore.ensureConversation(this, partnerId)
         findViewById<TextView>(R.id.chatPartnerName).text = partner.name
@@ -29,16 +31,17 @@ class ChatActivity : Activity() {
             val text = input.text.toString().trim()
             if (text.isNotEmpty()) {
                 ChatStore.add(this, partnerId, ChatMessage(text, true, System.currentTimeMillis()))
-                input.text.clear(); renderMessages()
+                input.text.clear(); renderMessages(ChatStore.messages(this, partnerId))
             }
         }
         findViewById<Button>(R.id.shareLocationButton).setOnClickListener { shareLocation() }
-        renderMessages()
+        renderMessages(ChatStore.messages(this, partnerId))
+        messageListener = FirebaseBackend.observeMessages(this, partnerId) { messages -> renderMessages(messages) }
     }
 
-    private fun renderMessages() {
+    private fun renderMessages(messages: List<ChatMessage>) {
         messagesContainer.removeAllViews()
-        ChatStore.messages(this, partnerId).forEach { message ->
+        messages.forEach { message ->
             val bubble = layoutInflater.inflate(R.layout.item_chat_message, messagesContainer, false) as TextView
             bubble.text = message.text
             bubble.gravity = if (message.sentByMe) android.view.Gravity.END else android.view.Gravity.START
@@ -46,6 +49,11 @@ class ChatActivity : Activity() {
             bubble.setBackgroundResource(if (message.sentByMe) R.drawable.bg_message_me else R.drawable.bg_message_them)
             messagesContainer.addView(bubble)
         }
+    }
+
+    override fun onDestroy() {
+        messageListener?.remove()
+        super.onDestroy()
     }
 
     private fun shareLocation() {
@@ -61,7 +69,7 @@ class ChatActivity : Activity() {
         val message = location?.let { "📍 My location: https://maps.google.com/?q=${it.latitude},${it.longitude}" }
             ?: "📍 I’m ready to share my location, but no recent location is available yet."
         ChatStore.add(this, partnerId, ChatMessage(message, true, System.currentTimeMillis()))
-        renderMessages()
+        renderMessages(ChatStore.messages(this, partnerId))
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {

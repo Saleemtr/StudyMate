@@ -24,3 +24,5 @@ Firebase Authentication, Cloud Firestore, Storage and Cloud Messaging SDKs are i
 4. Rebuild the project. The Google Services plugin is applied automatically when the configuration file exists.
 
 The configuration file is intentionally ignored by Git.
+
+Firestore security rules are versioned in `firestore.rules`. Publish this file through Firebase Console or Firebase CLI whenever the rules change.

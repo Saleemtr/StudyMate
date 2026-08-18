@@ -1,14 +1,48 @@
 package com.studymate.app
 
-object StudyPartnerRepository {
-    val partners = listOf(
-        StudyPartner(1, "Maya Cohen", "Computer Science", "Kotlin", "Android fundamentals", "Evenings", "In person", "Campus library", "Second-year student who enjoys learning through practical exercises.", 96),
-        StudyPartner(2, "Omar Khalil", "Mathematics", "Calculus", "Integrals", "Afternoons", "Hybrid", "Study room", "Looking for a consistent weekly study group.", 92),
-        StudyPartner(3, "Noa Levi", "Engineering", "Physics", "Mechanics", "Mornings", "Online", "Online", "Prefers focused sessions with a clear list of goals.", 88),
-        StudyPartner(4, "Daniel Mansour", "Business", "Statistics", "Probability", "Evenings", "In person", "Campus café", "Happy to review exercises and prepare together for exams.", 84),
-        StudyPartner(5, "Lina Haddad", "Computer Science", "Data Structures", "Trees and graphs", "Weekends", "Hybrid", "Campus library", "Visual learner interested in pair programming and problem solving.", 81),
-        StudyPartner(6, "Adam Saad", "Natural Sciences", "Chemistry", "Organic chemistry", "Afternoons", "Online", "Online", "Likes short, structured sessions and shared summaries.", 78)
-    )
+import android.content.Context
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
-    fun find(id: Long) = partners.firstOrNull { it.id == id }
+object StudyPartnerRepository {
+    var partners: List<StudyPartner> = emptyList()
+        private set
+
+    fun load(context: Context, result: (Boolean, String?) -> Unit) {
+        if (!FirebaseBackend.isConfigured(context)) {
+            partners = emptyList()
+            result(true, null)
+            return
+        }
+        val currentUid = FirebaseAuth.getInstance().currentUser?.uid
+        val localProfile = context.getSharedPreferences("profile", Context.MODE_PRIVATE)
+        val ownDepartment = localProfile.getString("department", "").orEmpty()
+        val ownCourses = localProfile.getString("courses", "").orEmpty()
+        FirebaseFirestore.getInstance().collection("users").get()
+            .addOnSuccessListener { snapshot ->
+                partners = snapshot.documents.filter { it.id != currentUid }.map { document ->
+                    val department = document.getString("department").orEmpty()
+                    val courses = document.getString("courses").orEmpty().ifBlank { "General study" }
+                    val availability = document.getString("availability").orEmpty().ifBlank { "Flexible" }
+                    val score = 70 + (if (department.equals(ownDepartment, true) && department.isNotBlank()) 15 else 0) +
+                        (if (ownCourses.isNotBlank() && courses.contains(ownCourses, true)) 10 else 0)
+                    StudyPartner(
+                        id = document.id,
+                        name = document.getString("name").orEmpty().ifBlank { "StudyMate student" },
+                        department = department.ifBlank { "Student" },
+                        course = courses,
+                        topic = "Open to study requests",
+                        availability = availability,
+                        meetingMode = document.getString("meetingMode").orEmpty().ifBlank { "Hybrid" },
+                        location = document.getString("location").orEmpty().ifBlank { "To be arranged" },
+                        bio = document.getString("bio").orEmpty().ifBlank { "Looking for a study partner." },
+                        matchScore = score.coerceAtMost(99)
+                    )
+                }
+                result(true, null)
+            }
+            .addOnFailureListener { error -> result(false, error.localizedMessage) }
+    }
+
+    fun find(id: String) = partners.firstOrNull { it.id == id }
 }

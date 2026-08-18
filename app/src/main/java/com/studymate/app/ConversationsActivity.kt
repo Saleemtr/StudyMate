@@ -17,6 +17,12 @@ class ConversationsActivity : Activity() {
 
     override fun onResume() {
         super.onResume()
+        if (StudyPartnerRepository.partners.isEmpty()) {
+            StudyPartnerRepository.load(this) { _, _ -> renderConversations() }
+        } else renderConversations()
+    }
+
+    private fun renderConversations() {
         val container = findViewById<LinearLayout>(R.id.conversationsContainer)
         val empty = findViewById<TextView>(R.id.emptyConversationsText)
         container.removeAllViews()

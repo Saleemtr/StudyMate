@@ -10,7 +10,7 @@ class PartnerDetailsActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_partner_details)
-        val partner = StudyPartnerRepository.find(intent.getLongExtra("partner_id", 0)) ?: run { finish(); return }
+        val partner = StudyPartnerRepository.find(intent.getStringExtra("partner_id").orEmpty()) ?: run { finish(); return }
         findViewById<TextView>(R.id.partnerDetailsName).text = partner.name
         findViewById<TextView>(R.id.partnerDetailsDepartment).text = partner.department
         findViewById<TextView>(R.id.partnerDetailsScore).text = "${partner.matchScore}% match"

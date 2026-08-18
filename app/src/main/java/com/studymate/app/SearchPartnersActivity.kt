@@ -9,6 +9,7 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.Spinner
 import android.widget.TextView
+import android.widget.Toast
 
 class SearchPartnersActivity : Activity() {
     private lateinit var keyword: EditText
@@ -35,7 +36,11 @@ class SearchPartnersActivity : Activity() {
         }
         availability.onItemSelectedListener = listener
         meetingMode.onItemSelectedListener = listener
-        applyFilters()
+        resultCount.text = "Loading students…"
+        StudyPartnerRepository.load(this) { success, error ->
+            if (!success) Toast.makeText(this, error ?: "Could not load students", Toast.LENGTH_LONG).show()
+            applyFilters()
+        }
     }
 
     private fun applyFilters() {

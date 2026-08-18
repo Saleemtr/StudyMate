@@ -5,6 +5,8 @@ import android.net.Uri
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
+import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.storage.FirebaseStorage
 
@@ -20,7 +22,10 @@ object FirebaseBackend {
     fun signIn(context: Context, email: String, password: String, result: (Boolean, String?) -> Unit): Boolean {
         if (!isConfigured(context)) return false
         FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task -> result(task.isSuccessful, task.exception?.localizedMessage) }
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) syncInstallationId(context)
+                result(task.isSuccessful, task.exception?.localizedMessage)
+            }
         return true
     }
 
@@ -31,7 +36,10 @@ object FirebaseBackend {
             else {
                 val uid = task.result.user?.uid ?: return@addOnCompleteListener result(false, "Missing user ID")
                 FirebaseFirestore.getInstance().collection("users").document(uid).set(profile)
-                    .addOnCompleteListener { save -> result(save.isSuccessful, save.exception?.localizedMessage) }
+                    .addOnCompleteListener { save ->
+                        if (save.isSuccessful) syncInstallationId(context)
+                        result(save.isSuccessful, save.exception?.localizedMessage)
+                    }
             }
         }
         return true
@@ -40,8 +48,18 @@ object FirebaseBackend {
     fun syncProfile(context: Context, profile: Map<String, Any>) {
         if (!isConfigured(context)) return
         FirebaseAuth.getInstance().currentUser?.uid?.let { uid ->
-            FirebaseFirestore.getInstance().collection("users").document(uid).set(profile)
+            FirebaseFirestore.getInstance().collection("users").document(uid).set(profile, SetOptions.merge())
         }
+    }
+
+    fun syncInstallationId(context: Context) {
+        if (!isConfigured(context)) return
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val installationId = context.getSharedPreferences("firebase", Context.MODE_PRIVATE)
+            .getString("fcm_installation_id", null) ?: return
+        val email = FirebaseAuth.getInstance().currentUser?.email.orEmpty()
+        FirebaseFirestore.getInstance().collection("users").document(uid)
+            .set(mapOf("fcmInstallationId" to installationId, "email" to email), SetOptions.merge())
     }
 
     fun syncRequest(context: Context, request: StudyRequest) {
@@ -57,12 +75,44 @@ object FirebaseBackend {
         if (isConfigured(context)) FirebaseFirestore.getInstance().collection("studyRequests").document(id.toString()).delete()
     }
 
-    fun syncMessage(context: Context, partnerId: Long, message: ChatMessage) {
+    fun syncMessage(context: Context, partnerId: String, message: ChatMessage) {
         if (!isConfigured(context)) return
         val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
-        FirebaseFirestore.getInstance().collection("chats").document("${uid}_$partnerId").collection("messages")
-            .add(mapOf("text" to message.text, "senderId" to uid, "timestamp" to message.timestamp))
+        val chat = FirebaseFirestore.getInstance().collection("chats").document(chatId(uid, partnerId))
+        chat.set(mapOf(
+            "lastMessage" to message.text,
+            "lastMessageAt" to message.timestamp
+        ), SetOptions.merge()).addOnSuccessListener {
+            chat.collection("messages")
+                .add(mapOf("text" to message.text, "senderId" to uid, "timestamp" to message.timestamp))
+        }
     }
+
+    fun ensureConversation(context: Context, partnerId: String) {
+        if (!isConfigured(context)) return
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        FirebaseFirestore.getInstance().collection("chats").document(chatId(uid, partnerId))
+            .set(mapOf("participantIds" to participantIds(uid, partnerId)), SetOptions.merge())
+    }
+
+    fun observeMessages(context: Context, partnerId: String, result: (List<ChatMessage>) -> Unit): ListenerRegistration? {
+        if (!isConfigured(context)) return null
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return null
+        return FirebaseFirestore.getInstance().collection("chats").document(chatId(uid, partnerId))
+            .collection("messages").orderBy("timestamp").addSnapshotListener { snapshot, _ ->
+                if (snapshot != null) result(snapshot.documents.map { document ->
+                    ChatMessage(
+                        text = document.getString("text").orEmpty(),
+                        sentByMe = document.getString("senderId") == uid,
+                        timestamp = document.getLong("timestamp") ?: 0L
+                    )
+                })
+            }
+    }
+
+    private fun chatId(firstUid: String, secondUid: String) = listOf(firstUid, secondUid).sorted().joinToString("_")
+
+    private fun participantIds(firstUid: String, secondUid: String) = listOf(firstUid, secondUid).sorted()
 
     fun uploadProfilePhoto(context: Context, image: Uri, result: (Boolean, String?) -> Unit) {
         if (!isConfigured(context)) return result(false, "Firebase is not configured")

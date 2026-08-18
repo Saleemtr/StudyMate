@@ -9,12 +9,14 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 
 class StudyMateMessagingService : FirebaseMessagingService() {
     override fun onRegistered(installationId: String) {
         getSharedPreferences("firebase", MODE_PRIVATE).edit().putString("fcm_installation_id", installationId).apply()
         FirebaseAuth.getInstance().currentUser?.uid?.let { uid ->
-            FirebaseFirestore.getInstance().collection("users").document(uid).update("fcmInstallationId", installationId)
+            FirebaseFirestore.getInstance().collection("users").document(uid)
+                .set(mapOf("fcmInstallationId" to installationId), SetOptions.merge())
         }
     }
 
