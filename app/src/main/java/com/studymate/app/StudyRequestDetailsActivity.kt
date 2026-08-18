@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 
 class StudyRequestDetailsActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,13 +24,27 @@ class StudyRequestDetailsActivity : Activity() {
             startActivity(Intent(this, CreateRequestActivity::class.java).putExtra("request_id", id)); finish()
         }
         findViewById<Button>(R.id.closeRequestButton).setOnClickListener {
-            StudyRequestStore.save(this, request.copy(status = "Closed")); recreate()
+            val button = it as Button
+            button.isEnabled = false
+            button.text = "Closing…"
+            StudyRequestStore.save(this, request.copy(status = "Closed")) { success, error ->
+                if (success) recreate() else {
+                    button.isEnabled = true
+                    button.text = "Close request"
+                    Toast.makeText(this, error ?: "Could not close request", Toast.LENGTH_LONG).show()
+                }
+            }
         }
         findViewById<Button>(R.id.deleteRequestButton).setOnClickListener {
             AlertDialog.Builder(this).setTitle("Delete request?")
                 .setMessage("This action cannot be undone.")
                 .setNegativeButton("Cancel", null)
-                .setPositiveButton("Delete") { _, _ -> StudyRequestStore.delete(this, id); finish() }
+                .setPositiveButton("Delete") { _, _ ->
+                    StudyRequestStore.delete(this, id) { success, error ->
+                        if (success) finish()
+                        else Toast.makeText(this, error ?: "Could not delete request", Toast.LENGTH_LONG).show()
+                    }
+                }
                 .show()
         }
     }

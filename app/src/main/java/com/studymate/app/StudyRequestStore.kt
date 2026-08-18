@@ -23,16 +23,20 @@ object StudyRequestStore {
 
     fun find(context: Context, id: Long) = getAll(context).firstOrNull { it.id == id }
 
-    fun save(context: Context, request: StudyRequest) {
+    fun save(context: Context, request: StudyRequest, result: (Boolean, String?) -> Unit = { _, _ -> }) {
         val requests = getAll(context).filterNot { it.id == request.id }.toMutableList()
         requests.add(request)
-        persist(context, requests)
-        FirebaseBackend.syncRequest(context, request)
+        FirebaseBackend.syncRequest(context, request) { success, error ->
+            if (success) persist(context, requests)
+            result(success, error)
+        }
     }
 
-    fun delete(context: Context, id: Long) {
-        persist(context, getAll(context).filterNot { it.id == id })
-        FirebaseBackend.deleteRequest(context, id)
+    fun delete(context: Context, id: Long, result: (Boolean, String?) -> Unit = { _, _ -> }) {
+        FirebaseBackend.deleteRequest(context, id) { success, error ->
+            if (success) persist(context, getAll(context).filterNot { it.id == id })
+            result(success, error)
+        }
     }
 
     fun replaceFromCloud(context: Context, requests: List<StudyRequest>) {

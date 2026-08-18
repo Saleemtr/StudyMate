@@ -111,17 +111,19 @@ object FirebaseBackend {
             .set(mapOf("fcmInstallationId" to installationId, "email" to email), SetOptions.merge())
     }
 
-    fun syncRequest(context: Context, request: StudyRequest) {
-        if (!isConfigured(context)) return
-        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+    fun syncRequest(context: Context, request: StudyRequest, result: (Boolean, String?) -> Unit) {
+        if (!isConfigured(context)) return result(false, "Firebase is not configured")
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return result(false, "Sign in first")
         FirebaseFirestore.getInstance().collection("studyRequests").document(request.id.toString()).set(
             mapOf("ownerId" to uid, "course" to request.course, "topic" to request.topic, "date" to request.date,
                 "time" to request.time, "location" to request.location, "notes" to request.notes, "status" to request.status)
-        )
+        ).addOnCompleteListener { task -> result(task.isSuccessful, task.exception?.localizedMessage) }
     }
 
-    fun deleteRequest(context: Context, id: Long) {
-        if (isConfigured(context)) FirebaseFirestore.getInstance().collection("studyRequests").document(id.toString()).delete()
+    fun deleteRequest(context: Context, id: Long, result: (Boolean, String?) -> Unit) {
+        if (!isConfigured(context)) return result(false, "Firebase is not configured")
+        FirebaseFirestore.getInstance().collection("studyRequests").document(id.toString()).delete()
+            .addOnCompleteListener { task -> result(task.isSuccessful, task.exception?.localizedMessage) }
     }
 
     fun observeMyRequests(

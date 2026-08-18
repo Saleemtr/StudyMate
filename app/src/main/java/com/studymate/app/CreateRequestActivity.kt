@@ -29,7 +29,8 @@ class CreateRequestActivity : Activity() {
             findViewById<Button>(R.id.publishRequestButton).text = "Save changes"
         }
 
-        findViewById<Button>(R.id.publishRequestButton).setOnClickListener {
+        val publishButton = findViewById<Button>(R.id.publishRequestButton)
+        publishButton.setOnClickListener {
             val validCourse = course.text.toString().trim().isNotEmpty()
             val validTopic = topic.text.toString().trim().isNotEmpty()
             val validDate = date.text.toString().trim().isNotEmpty()
@@ -40,14 +41,23 @@ class CreateRequestActivity : Activity() {
             time.error = if (validTime) null else "Time is required"
             if (validCourse && validTopic && validDate && validTime) {
                 val existing = StudyRequestStore.find(this, requestId)
+                publishButton.isEnabled = false
+                publishButton.text = "Saving…"
                 StudyRequestStore.save(this, StudyRequest(
                     if (requestId == 0L) System.currentTimeMillis() else requestId,
                     course.text.toString().trim(), topic.text.toString().trim(), date.text.toString().trim(),
                     time.text.toString().trim(), location.selectedItem.toString(), notes.text.toString().trim(),
                     existing?.status ?: "Open"
-                ))
-                Toast.makeText(this, if (requestId == 0L) "Request published" else "Request updated", Toast.LENGTH_SHORT).show()
-                finish()
+                )) { success, error ->
+                    if (success) {
+                        Toast.makeText(this, if (requestId == 0L) "Request published" else "Request updated", Toast.LENGTH_SHORT).show()
+                        finish()
+                    } else {
+                        publishButton.isEnabled = true
+                        publishButton.text = if (requestId == 0L) "Publish request" else "Save changes"
+                        Toast.makeText(this, error ?: "Could not save request", Toast.LENGTH_LONG).show()
+                    }
+                }
             }
         }
     }
