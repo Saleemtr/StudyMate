@@ -17,11 +17,20 @@ class ProfileActivity : Activity() {
         val courses = findViewById<EditText>(R.id.profileCourses)
         val availability = findViewById<EditText>(R.id.profileAvailability)
         val bio = findViewById<EditText>(R.id.profileBio)
-        name.setText(preferences.getString("name", ""))
-        department.setText(preferences.getString("department", ""))
-        courses.setText(preferences.getString("courses", ""))
-        availability.setText(preferences.getString("availability", ""))
-        bio.setText(preferences.getString("bio", ""))
+        fun showSavedProfile() {
+            name.setText(preferences.getString("name", ""))
+            department.setText(preferences.getString("department", ""))
+            courses.setText(preferences.getString("courses", ""))
+            availability.setText(preferences.getString("availability", ""))
+            bio.setText(preferences.getString("bio", ""))
+        }
+        showSavedProfile()
+        FirebaseBackend.refreshOwnProfile(this) { success, error ->
+            if (success) showSavedProfile()
+            else if (error != "Firebase is not configured") {
+                Toast.makeText(this, error ?: "Could not load profile", Toast.LENGTH_LONG).show()
+            }
+        }
         findViewById<Button>(R.id.saveProfileButton).setOnClickListener {
             if (name.text.toString().trim().length < 2) {
                 name.error = "Enter your full name"

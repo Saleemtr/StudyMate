@@ -13,7 +13,7 @@ class LoginActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (FirebaseBackend.hasSignedInUser(this)) {
-            openHome()
+            FirebaseBackend.refreshOwnProfile(this) { _, _ -> openHome() }
             return
         }
         setContentView(R.layout.activity_login)

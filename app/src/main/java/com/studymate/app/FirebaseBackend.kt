@@ -34,8 +34,12 @@ object FirebaseBackend {
                 if (task.isSuccessful) {
                     syncInstallationId(context)
                     migrateOwnProfile(context)
+                    refreshOwnProfile(context) { _, _ ->
+                        result(true, null)
+                    }
+                } else {
+                    result(false, task.exception?.localizedMessage)
                 }
-                result(task.isSuccessful, task.exception?.localizedMessage)
             }
         return true
     }
@@ -66,6 +70,21 @@ object FirebaseBackend {
         FirebaseAuth.getInstance().currentUser?.uid?.let { uid ->
             FirebaseFirestore.getInstance().collection("publicProfiles").document(uid).set(profile, SetOptions.merge())
         }
+    }
+
+    fun refreshOwnProfile(context: Context, result: (Boolean, String?) -> Unit) {
+        if (!isConfigured(context)) return result(false, "Firebase is not configured")
+        val user = FirebaseAuth.getInstance().currentUser ?: return result(false, "Sign in first")
+        FirebaseFirestore.getInstance().collection("publicProfiles").document(user.uid).get()
+            .addOnSuccessListener { document ->
+                val editor = context.getSharedPreferences("profile", Context.MODE_PRIVATE).edit().clear()
+                    .putString("email", user.email.orEmpty())
+                listOf("name", "department", "courses", "availability", "bio", "meetingMode", "location")
+                    .forEach { key -> editor.putString(key, document.getString(key).orEmpty()) }
+                editor.apply()
+                result(true, null)
+            }
+            .addOnFailureListener { error -> result(false, error.localizedMessage) }
     }
 
     private fun migrateOwnProfile(context: Context) {
