@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
+import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import com.google.firebase.firestore.ListenerRegistration
@@ -15,6 +16,7 @@ import com.google.firebase.firestore.ListenerRegistration
 class ChatActivity : Activity() {
     private var partnerId: String = ""
     private lateinit var messagesContainer: LinearLayout
+    private lateinit var messagesScroll: ScrollView
     private var messageListener: ListenerRegistration? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,6 +27,7 @@ class ChatActivity : Activity() {
         ChatStore.ensureConversation(this, partnerId)
         findViewById<TextView>(R.id.chatPartnerName).text = partner.name
         findViewById<TextView>(R.id.chatPartnerContext).text = "${partner.course} • ${partner.topic}"
+        messagesScroll = findViewById(R.id.chatScroll)
         messagesContainer = findViewById(R.id.chatMessagesContainer)
         val input = findViewById<EditText>(R.id.messageInput)
         findViewById<Button>(R.id.sendMessageButton).setOnClickListener {
@@ -36,7 +39,10 @@ class ChatActivity : Activity() {
         }
         findViewById<Button>(R.id.shareLocationButton).setOnClickListener { shareLocation() }
         renderMessages(ChatStore.messages(this, partnerId))
-        messageListener = FirebaseBackend.observeMessages(this, partnerId) { messages -> renderMessages(messages) }
+        messageListener = FirebaseBackend.observeMessages(this, partnerId) { messages, error ->
+            if (error == null) renderMessages(messages)
+            else Toast.makeText(this, "Could not load messages: $error", Toast.LENGTH_LONG).show()
+        }
     }
 
     private fun renderMessages(messages: List<ChatMessage>) {
@@ -49,6 +55,7 @@ class ChatActivity : Activity() {
             bubble.setBackgroundResource(if (message.sentByMe) R.drawable.bg_message_me else R.drawable.bg_message_them)
             messagesContainer.addView(bubble)
         }
+        messagesScroll.post { messagesScroll.fullScroll(ScrollView.FOCUS_DOWN) }
     }
 
     override fun onDestroy() {

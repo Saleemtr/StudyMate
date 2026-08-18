@@ -100,13 +100,20 @@ object FirebaseBackend {
     fun syncMessage(context: Context, partnerId: String, message: ChatMessage) {
         if (!isConfigured(context)) return
         val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
-        val chat = FirebaseFirestore.getInstance().collection("chats").document(chatId(uid, partnerId))
-        chat.set(mapOf(
-            "lastMessage" to message.text,
-            "lastMessageAt" to message.timestamp
-        ), SetOptions.merge()).addOnSuccessListener {
-            chat.collection("messages")
-                .add(mapOf("text" to message.text, "senderId" to uid, "timestamp" to message.timestamp))
+        val database = FirebaseFirestore.getInstance()
+        val chat = database.collection("chats").document(chatId(uid, partnerId))
+        val newMessage = chat.collection("messages").document()
+        database.runBatch { batch ->
+            batch.set(chat, mapOf(
+                "participantIds" to participantIds(uid, partnerId),
+                "lastMessage" to message.text,
+                "lastMessageAt" to message.timestamp
+            ), SetOptions.merge())
+            batch.set(newMessage, mapOf(
+                "text" to message.text,
+                "senderId" to uid,
+                "timestamp" to message.timestamp
+            ))
         }
     }
 
@@ -117,18 +124,26 @@ object FirebaseBackend {
             .set(mapOf("participantIds" to participantIds(uid, partnerId)), SetOptions.merge())
     }
 
-    fun observeMessages(context: Context, partnerId: String, result: (List<ChatMessage>) -> Unit): ListenerRegistration? {
+    fun observeMessages(
+        context: Context,
+        partnerId: String,
+        result: (List<ChatMessage>, String?) -> Unit
+    ): ListenerRegistration? {
         if (!isConfigured(context)) return null
         val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return null
         return FirebaseFirestore.getInstance().collection("chats").document(chatId(uid, partnerId))
-            .collection("messages").orderBy("timestamp").addSnapshotListener { snapshot, _ ->
-                if (snapshot != null) result(snapshot.documents.map { document ->
+            .collection("messages").addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    result(emptyList(), error.localizedMessage)
+                } else if (snapshot != null) {
+                    result(snapshot.documents.map { document ->
                     ChatMessage(
                         text = document.getString("text").orEmpty(),
                         sentByMe = document.getString("senderId") == uid,
                         timestamp = document.getLong("timestamp") ?: 0L
                     )
-                })
+                    }.sortedBy { it.timestamp }, null)
+                }
             }
     }
 
