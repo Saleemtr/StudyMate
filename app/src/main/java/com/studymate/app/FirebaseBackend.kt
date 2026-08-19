@@ -155,9 +155,9 @@ object FirebaseBackend {
             }
     }
 
-    fun syncMessage(context: Context, partnerId: String, message: ChatMessage) {
-        if (!isConfigured(context)) return
-        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+    fun syncMessage(context: Context, partnerId: String, message: ChatMessage, result: (Boolean, String?) -> Unit) {
+        if (!isConfigured(context)) return result(false, "Firebase is not configured")
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return result(false, "Sign in first")
         val database = FirebaseFirestore.getInstance()
         val chat = database.collection("chats").document(chatId(uid, partnerId))
         val newMessage = chat.collection("messages").document()
@@ -172,7 +172,7 @@ object FirebaseBackend {
                 "senderId" to uid,
                 "timestamp" to message.timestamp
             ))
-        }
+        }.addOnCompleteListener { task -> result(task.isSuccessful, task.exception?.localizedMessage) }
     }
 
     fun ensureConversation(context: Context, partnerId: String) {

@@ -17,6 +17,9 @@ class ChatActivity : Activity() {
     private var partnerId: String = ""
     private lateinit var messagesContainer: LinearLayout
     private lateinit var messagesScroll: ScrollView
+    private lateinit var messageInput: EditText
+    private lateinit var sendButton: Button
+    private lateinit var locationButton: Button
     private var messageListener: ListenerRegistration? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,19 +32,36 @@ class ChatActivity : Activity() {
         findViewById<TextView>(R.id.chatPartnerContext).text = "${partner.course} • ${partner.topic}"
         messagesScroll = findViewById(R.id.chatScroll)
         messagesContainer = findViewById(R.id.chatMessagesContainer)
-        val input = findViewById<EditText>(R.id.messageInput)
-        findViewById<Button>(R.id.sendMessageButton).setOnClickListener {
-            val text = input.text.toString().trim()
+        messageInput = findViewById(R.id.messageInput)
+        sendButton = findViewById(R.id.sendMessageButton)
+        locationButton = findViewById(R.id.shareLocationButton)
+        sendButton.setOnClickListener {
+            val text = messageInput.text.toString().trim()
             if (text.isNotEmpty()) {
-                ChatStore.add(this, partnerId, ChatMessage(text, true, System.currentTimeMillis()))
-                input.text.clear(); renderMessages(ChatStore.messages(this, partnerId))
+                sendOutgoingMessage(text, clearInput = true)
             }
         }
-        findViewById<Button>(R.id.shareLocationButton).setOnClickListener { shareLocation() }
+        locationButton.setOnClickListener { shareLocation() }
         renderMessages(ChatStore.messages(this, partnerId))
         messageListener = FirebaseBackend.observeMessages(this, partnerId) { messages, error ->
             if (error == null) renderMessages(messages)
             else Toast.makeText(this, "Could not load messages: $error", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun sendOutgoingMessage(text: String, clearInput: Boolean) {
+        sendButton.isEnabled = false
+        locationButton.isEnabled = false
+        sendButton.text = "Sending…"
+        ChatStore.add(this, partnerId, ChatMessage(text, true, System.currentTimeMillis())) { success, error ->
+            sendButton.isEnabled = true
+            locationButton.isEnabled = true
+            sendButton.text = "Send"
+            if (success) {
+                if (clearInput) messageInput.text.clear()
+            } else {
+                Toast.makeText(this, error ?: "Could not send message", Toast.LENGTH_LONG).show()
+            }
         }
     }
 
@@ -75,8 +95,7 @@ class ChatActivity : Activity() {
             .maxByOrNull { it.time }
         val message = location?.let { "📍 My location: https://maps.google.com/?q=${it.latitude},${it.longitude}" }
             ?: "📍 I’m ready to share my location, but no recent location is available yet."
-        ChatStore.add(this, partnerId, ChatMessage(message, true, System.currentTimeMillis()))
-        renderMessages(ChatStore.messages(this, partnerId))
+        sendOutgoingMessage(message, clearInput = false)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {

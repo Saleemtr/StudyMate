@@ -26,9 +26,16 @@ object ChatStore {
         }
     }
 
-    fun add(context: Context, partnerId: String, message: ChatMessage) {
-        save(context, partnerId, messages(context, partnerId) + message)
-        FirebaseBackend.syncMessage(context, partnerId, message)
+    fun add(
+        context: Context,
+        partnerId: String,
+        message: ChatMessage,
+        result: (Boolean, String?) -> Unit
+    ) {
+        FirebaseBackend.syncMessage(context, partnerId, message) { success, error ->
+            if (success) save(context, partnerId, messages(context, partnerId) + message)
+            result(success, error)
+        }
     }
 
     private fun save(context: Context, partnerId: String, messages: List<ChatMessage>) {
