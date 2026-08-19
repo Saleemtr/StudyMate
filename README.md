@@ -76,26 +76,3 @@ Chat document identifiers are generated consistently from the two participant UI
 4. Wait for Gradle synchronization to finish.
 5. Select a physical device or a Google Play-enabled emulator.
 6. Press **Run**.
-
-## Verification
-
-The completed user flow has been tested on a physical Android phone and an Android 14 Google Play emulator:
-
-- Registration, validation, login, saved session and logout
-- Profile loading and synchronization between accounts
-- Study-request creation, editing, closing, deletion and persistence
-- Partner search, filters and profile details
-- Two-way real-time chat and conversation previews
-- Duplicate-send prevention and Firebase failure handling
-- Location sharing and opening the shared Google Maps link
-- Back navigation, application branding and launcher icon
-
-The project also passes:
-
-```bash
-./gradlew lintDebug assembleDebug
-```
-
-## Project status
-
-The main application flow is complete and connected to Firebase. Future improvements may include dark mode, full push-notification delivery through a trusted backend and additional automated UI tests.
