@@ -22,6 +22,7 @@ class SearchPartnersActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search_partners)
+        setupBackButton()
         keyword = findViewById(R.id.searchKeyword)
         availability = findViewById(R.id.availabilityFilter)
         meetingMode = findViewById(R.id.modeFilter)

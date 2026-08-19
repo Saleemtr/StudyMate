@@ -2,6 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="match_parent" android:background="@color/surface">
     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="24dp">
+        <ImageButton android:id="@+id/backButton" android:layout_width="48dp" android:layout_height="48dp" android:background="@drawable/bg_icon_button" android:contentDescription="Back" android:padding="12dp" android:src="@drawable/ic_arrow_back" />
         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Messages" android:textColor="@color/navy" android:textSize="30sp" android:textStyle="bold" />
         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="Plan your next study session" android:textColor="@color/blue" android:textSize="16sp" />
         <TextView android:id="@+id/emptyConversationsText" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="48dp" android:gravity="center" android:text="No conversations yet. Find a partner and contact them." android:textColor="@color/navy" android:textSize="17sp" />

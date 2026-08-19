@@ -12,6 +12,7 @@ class StudyRequestDetailsActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_request_details)
+        setupBackButton()
         val id = intent.getLongExtra("request_id", 0)
         val request = StudyRequestStore.find(this, id) ?: run { finish(); return }
         findViewById<TextView>(R.id.detailsCourse).text = request.course

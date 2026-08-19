@@ -5,8 +5,11 @@ import android.app.Activity
 import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.os.Bundle
+import android.text.method.LinkMovementMethod
+import android.text.util.Linkify
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
@@ -19,12 +22,13 @@ class ChatActivity : Activity() {
     private lateinit var messagesScroll: ScrollView
     private lateinit var messageInput: EditText
     private lateinit var sendButton: Button
-    private lateinit var locationButton: Button
+    private lateinit var locationButton: ImageButton
     private var messageListener: ListenerRegistration? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
+        setupBackButton()
         partnerId = intent.getStringExtra("partner_id").orEmpty()
         val partner = StudyPartnerRepository.find(partnerId) ?: run { finish(); return }
         ChatStore.ensureConversation(this, partnerId)
@@ -70,8 +74,11 @@ class ChatActivity : Activity() {
         messages.forEach { message ->
             val bubble = layoutInflater.inflate(R.layout.item_chat_message, messagesContainer, false) as TextView
             bubble.text = message.text
+            Linkify.addLinks(bubble, Linkify.WEB_URLS)
+            bubble.movementMethod = LinkMovementMethod.getInstance()
             bubble.gravity = if (message.sentByMe) android.view.Gravity.END else android.view.Gravity.START
             bubble.setTextColor(getColor(if (message.sentByMe) R.color.white else R.color.navy))
+            bubble.setLinkTextColor(getColor(if (message.sentByMe) R.color.white else R.color.blue))
             bubble.setBackgroundResource(if (message.sentByMe) R.drawable.bg_message_me else R.drawable.bg_message_them)
             messagesContainer.addView(bubble)
         }

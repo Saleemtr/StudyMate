@@ -13,6 +13,7 @@ class CreateRequestActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_request)
+        setupBackButton()
         requestId = intent.getLongExtra("request_id", 0)
         val course = findViewById<EditText>(R.id.requestCourse)
         val topic = findViewById<EditText>(R.id.requestTopic)

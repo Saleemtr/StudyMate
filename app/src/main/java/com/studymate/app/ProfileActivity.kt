@@ -11,6 +11,7 @@ class ProfileActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
+        setupBackButton()
         val preferences = getSharedPreferences("profile", MODE_PRIVATE)
         val name = findViewById<EditText>(R.id.profileName)
         val department = findViewById<EditText>(R.id.profileDepartment)

@@ -10,6 +10,7 @@ class PartnerDetailsActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_partner_details)
+        setupBackButton()
         val partner = StudyPartnerRepository.find(intent.getStringExtra("partner_id").orEmpty()) ?: run { finish(); return }
         findViewById<TextView>(R.id.partnerDetailsName).text = partner.name
         findViewById<TextView>(R.id.partnerDetailsDepartment).text = partner.department

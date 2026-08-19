@@ -17,6 +17,7 @@ class ConversationsActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_conversations)
+        setupBackButton()
         StudyPartnerRepository.load(this) { _, _ -> renderConversations() }
         conversationListener = FirebaseBackend.observeConversations(this) { conversations ->
             summaries = conversations

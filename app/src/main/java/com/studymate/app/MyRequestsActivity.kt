@@ -16,6 +16,7 @@ class MyRequestsActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_my_requests)
+        setupBackButton()
         findViewById<Button>(R.id.addRequestButton).setOnClickListener {
             startActivity(Intent(this, CreateRequestActivity::class.java))
         }

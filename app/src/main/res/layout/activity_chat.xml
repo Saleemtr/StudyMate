@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@color/surface" android:orientation="vertical">
+    <ImageButton android:id="@+id/backButton" android:layout_width="48dp" android:layout_height="48dp" android:layout_marginStart="12dp" android:layout_marginTop="8dp" android:background="@drawable/bg_icon_button" android:contentDescription="Back" android:padding="12dp" android:src="@drawable/ic_arrow_back" />
     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:background="@color/white" android:elevation="3dp" android:orientation="vertical" android:padding="18dp">
         <TextView android:id="@+id/chatPartnerName" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/navy" android:textSize="22sp" android:textStyle="bold" />
         <TextView android:id="@+id/chatPartnerContext" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="3dp" android:textColor="@color/blue" android:textSize="14sp" />
@@ -7,8 +8,8 @@
     <ScrollView android:id="@+id/chatScroll" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:fillViewport="true">
         <LinearLayout android:id="@+id/chatMessagesContainer" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp" />
     </ScrollView>
-    <Button android:id="@+id/shareLocationButton" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginHorizontal="14dp" android:text="Share my location" />
     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal" android:padding="12dp">
+        <ImageButton android:id="@+id/shareLocationButton" android:layout_width="52dp" android:layout_height="52dp" android:background="@drawable/bg_icon_button" android:contentDescription="Share my location" android:padding="13dp" android:src="@drawable/ic_location" />
         <EditText android:id="@+id/messageInput" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:hint="Write a message" android:inputType="textCapSentences|textMultiLine" android:maxLines="3" />
         <Button android:id="@+id/sendMessageButton" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="Send" />
     </LinearLayout>

@@ -1,7 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="match_parent" android:fillViewport="true" android:background="@color/surface">
     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_horizontal" android:orientation="vertical" android:padding="28dp">
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="64dp" android:text="StudyMate" android:textColor="@color/navy" android:textSize="38sp" android:textStyle="bold" />
+        <ImageView
+            android:layout_width="92dp"
+            android:layout_height="92dp"
+            android:layout_marginTop="44dp"
+            android:background="@drawable/bg_logo_badge"
+            android:contentDescription="StudyMate logo"
+            android:padding="10dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/studymate_logo" />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="14dp" android:text="StudyMate" android:textColor="@color/navy" android:textSize="38sp" android:textStyle="bold" />
         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Find your study partner" android:textColor="@color/blue" android:textSize="17sp" />
         <EditText android:id="@+id/loginEmail" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="52dp" android:hint="Student email" android:inputType="textEmailAddress" />
         <EditText android:id="@+id/loginPassword" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:hint="Password" android:inputType="textPassword" />

@@ -13,6 +13,7 @@ class RegisterActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
+        setupBackButton()
         val name = findViewById<EditText>(R.id.registerName)
         val email = findViewById<EditText>(R.id.registerEmail)
         val password = findViewById<EditText>(R.id.registerPassword)

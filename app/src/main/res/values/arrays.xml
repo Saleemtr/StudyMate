@@ -1,7 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="departments">
-        <item>Computer Science</item><item>Engineering</item><item>Business</item><item>Mathematics</item><item>Natural Sciences</item><item>Humanities</item><item>Other</item>
+        <item>Computer Science</item>
+        <item>Software Engineering</item>
+        <item>Electrical Engineering</item>
+        <item>Mechanical Engineering</item>
+        <item>Biomedical Engineering</item>
+        <item>Computer Engineering</item>
+        <item>Civil Engineering</item>
+        <item>Industrial Engineering and Management</item>
+        <item>Chemical Engineering</item>
+        <item>Materials Engineering</item>
+        <item>Engineering</item>
+        <item>Business</item>
+        <item>Mathematics</item>
+        <item>Natural Sciences</item>
+        <item>Humanities</item>
+        <item>Other</item>
     </string-array>
     <string-array name="study_locations">
         <item>Campus library</item><item>Online</item><item>Study room</item><item>Campus café</item><item>Other</item>

@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="navy">#102B53</color>
-    <color name="blue">#246BFD</color>
+    <color name="navy">#17233C</color>
+    <color name="blue">#4F6EF7</color>
+    <color name="blue_dark">#3D57D8</color>
+    <color name="teal">#20A98F</color>
+    <color name="slate">#667085</color>
+    <color name="border">#DCE3F0</color>
+    <color name="soft_blue">#E9EDFF</color>
+    <color name="danger">#D9485F</color>
     <color name="white">#FFFFFF</color>
-    <color name="surface">#F5F8FF</color>
+    <color name="surface">#F4F7FC</color>
+    <color name="launcher_background">#4F6EF7</color>
 </resources>

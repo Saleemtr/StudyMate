@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@color/surface">
     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="24dp">
+        <ImageButton android:id="@+id/backButton" android:layout_width="48dp" android:layout_height="48dp" android:background="@drawable/bg_icon_button" android:contentDescription="Back" android:padding="12dp" android:src="@drawable/ic_arrow_back" />
         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Request details" android:textColor="@color/navy" android:textSize="30sp" android:textStyle="bold" />
         <TextView android:id="@+id/detailsStatus" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="18dp" android:textColor="@color/blue" android:textSize="16sp" android:textStyle="bold" />
         <TextView android:id="@+id/detailsCourse" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="14dp" android:textColor="@color/navy" android:textSize="26sp" android:textStyle="bold" />
         <TextView android:id="@+id/detailsTopic" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:textColor="@color/navy" android:textSize="19sp" />
         <TextView android:id="@+id/detailsSchedule" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="22dp" android:textColor="@color/blue" android:textSize="17sp" />
         <TextView android:id="@+id/detailsLocation" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="9dp" android:textColor="@color/navy" android:textSize="17sp" />
-        <TextView android:id="@+id/detailsNotes" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="22dp" android:background="@color/white" android:padding="16dp" android:textColor="@color/navy" android:textSize="16sp" />
+        <TextView android:id="@+id/detailsNotes" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="22dp" android:background="@drawable/bg_card" android:padding="18dp" android:textColor="@color/navy" android:textSize="16sp" />
         <Button android:id="@+id/editRequestButton" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="26dp" android:text="Edit request" />
-        <Button android:id="@+id/closeRequestButton" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="9dp" android:text="Mark as closed" />
-        <Button android:id="@+id/deleteRequestButton" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="9dp" android:text="Delete request" />
+        <Button android:id="@+id/closeRequestButton" style="@style/StudyMate.Button.Secondary" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="9dp" android:text="Mark as closed" />
+        <Button android:id="@+id/deleteRequestButton" style="@style/StudyMate.Button.Danger" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="9dp" android:text="Delete request" />
     </LinearLayout>
 </ScrollView>

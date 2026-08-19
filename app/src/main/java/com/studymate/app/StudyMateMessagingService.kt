@@ -13,6 +13,15 @@ import com.google.firebase.firestore.SetOptions
 
 class StudyMateMessagingService : FirebaseMessagingService() {
     override fun onRegistered(installationId: String) {
+        saveInstallationId(installationId)
+    }
+
+    override fun onNewToken(token: String) {
+        super.onNewToken(token)
+        saveInstallationId(token)
+    }
+
+    private fun saveInstallationId(installationId: String) {
         getSharedPreferences("firebase", MODE_PRIVATE).edit().putString("fcm_installation_id", installationId).apply()
         FirebaseAuth.getInstance().currentUser?.uid?.let { uid ->
             FirebaseFirestore.getInstance().collection("users").document(uid)
